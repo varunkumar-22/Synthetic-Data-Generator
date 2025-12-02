@@ -1,5 +1,0 @@
-print("\nGenerating synthetic data...")
-start=time.time()
-df = generate_from_template(template, selected_subcats, count, seed)
-end=time.time()
-print(f"Time Taken: {end - start}")
