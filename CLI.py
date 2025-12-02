@@ -26,4 +26,10 @@ TEMPLATES = {
     "education_student_performance_template": EDU_STUDENT_TEMPLATE,
     "product_catalog_template": PRODUCT_CATALOG_TEMPLATE,
 }
-done= "Just a sample"
+
+# ---------------------------
+# IMPORT YOUR GENERATOR ENGINE
+# ---------------------------
+
+from DATA_ENGINE import generate_from_template
+
