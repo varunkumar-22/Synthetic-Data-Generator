@@ -80,3 +80,7 @@ def main():
     except ValueError:
         print("❌ Invalid count!")
         return
+    
+    # Step 4: Seed (optional)
+    seed_input = input("\nEnter Seed (press Enter to skip): ").strip()
+    seed = int(seed_input) if seed_input else None
