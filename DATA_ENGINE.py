@@ -66,39 +66,6 @@ USER_TEMPLATE = {
 
 
 
-
-# ----------GENERATOR FUNCTION----------
-
-def generate_from_template(template, selected_subcats, count=1, seed=None):
-    if seed is not None:
-        Faker.seed(seed)
-        random.seed(seed)
-
-    all_rows = []
-
-    for _ in range(count):
-        generated_data = {"id": str(uuid.uuid4())}  # internal only
-
-        for subcat in selected_subcats:
-            if subcat in template["subcategories"]:
-                for field, fn in template["subcategories"][subcat].items():
-                    generated_data[field] = fn()
-
-        all_rows.append(generated_data)
-
-    # Convert to DataFrame
-    df = pd.DataFrame(all_rows)
-    if "id" in df.columns:
-        df = df.drop(columns=["id"])
-
-
-    # Add sequential ID starting from 1
-    df.insert(0, "S.no.", range(1, len(df) + 1))
-
-    return df
-
-
-
 # ----------ECOM TEMPLATE ----------
 
 ECOM_TEMPLATE = {
@@ -274,6 +241,136 @@ FINANCIAL_TEMPLATE = {
     }
 }
 
+HEALTHCARE_TEMPLATE = {
+    "Template Name": "healthcare_medical_template",
+
+    "Subcategories": {
+
+        # 1. PATIENT INFORMATION
+        "Patient Info": {
+            "Patient Id": lambda: fake.uuid4(),
+            "Full Name": lambda: fake.name(),
+            "Age": lambda: random.randint(1, 95),
+            "Gender": lambda: random.choice(["Male", "Female", "Other"]),
+            "Blood Group": lambda: random.choice(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]),
+            "Contact Number": lambda: fake.phone_number(),
+            "Email": lambda: fake.email(),
+            "Address": lambda: fake.address().replace("\n", ", "),
+
+            # Light math: risk score based on age + random factor
+            "Risk Score": lambda: round(
+                math.sqrt(random.uniform(0.1, 1)) * (1 + (random.randint(1, 95) / 120)),
+                3
+            )
+        },
+
+        # 2. MEDICAL RECORD DETAILS
+        "Medical Record": {
+            "Record Id": lambda: fake.uuid4(),
+            "Diagnosis": lambda: random.choice([
+                "Hypertension", "Diabetes", "Asthma", "Migraine", "Allergy",
+                "Arthritis", "Viral Infection", "Flu", "Back Pain", "Cholesterol"
+            ]),
+            "Symptoms": lambda: random.choice([
+                "Fever, Cough, Fatigue",
+                "Headache, Nausea",
+                "Chest Pain, Dizziness",
+                "Joint Pain, Swelling",
+                "Shortness of Breath"
+            ]),
+            "Severity": lambda: random.choice(["Mild", "Moderate", "Severe", "Critical"]),
+            "Diagnosis Date": lambda: fake.date(),
+
+            # Statistics: average of 3 severity indicators (simulated)
+            "Severity Score": lambda: round(
+                statistics.mean([random.uniform(0.2, 1.0) for _ in range(3)]),
+                3
+            )
+        },
+
+        # 3. DOCTOR DETAILS
+        "Doctor Info": {
+            "Doctor Id": lambda: fake.uuid4(),
+            "Doctor Name": lambda: fake.name(),
+            "Specialization": lambda: random.choice([
+                "General Physician", "Cardiologist", "Neurologist",
+                "Dermatologist", "Pediatrician", "Orthopedic",
+                "Gynecologist", "ENT Specialist"
+            ]),
+            "Hospital Name": lambda: random.choice([
+                "Apollo Hospital", "Fortis Hospital", "AIIMS", "Max Healthcare",
+                "Narayana Health", "Care Hospitals", "KIMS Hospitals"
+            ]),
+
+            # Time-based: doctor availability after random minutes
+            "Next Available Slot": lambda: (
+                datetime.datetime.now() + datetime.timedelta(
+                    minutes=random.randint(15, 240)
+                )
+            ).isoformat()
+        },
+
+        # 4. APPOINTMENT DETAILS
+        "Appointment Info": {
+            "Appointment Id": lambda: fake.uuid4(),
+            "Appointment Date": lambda: fake.iso8601(),
+            "Appointment Status": lambda: random.choice(["Scheduled", "Completed", "Cancelled", "No-Show"]),
+            "Consultation Type": lambda: random.choice(["In-Person", "Online Video", "Telephonic"]),
+
+            # Light math: wait time simulation
+            "Estimated Wait Time Min": lambda: random.randint(5, 60)
+        },
+
+        # 5. PRESCRIPTION DETAILS
+        "Prescription Info": {
+            "Prescription Id": lambda: fake.uuid4(),
+            "Medicine Name": lambda: random.choice([
+                "Paracetamol", "Ibuprofen", "Amoxicillin", "Cetirizine",
+                "Vitamin D", "Metformin", "Aspirin", "Omeprazole"
+            ]),
+            "Dosage": lambda: random.choice([
+                "1 tablet daily", "2 tablets daily", "1 tablet after meals"
+            ]),
+            "Duration Days": lambda: random.randint(3, 30),
+
+            # Very light math: dosage efficiency score
+            "Dosage Effectiveness Score": lambda: round(
+                random.uniform(0.6, 1.0) * math.sqrt(random.random()),
+                3
+            )
+        },
+
+        # 6. BILLING / PAYMENT INFO
+        "Billing Info": {
+            "Invoice Id": lambda: fake.uuid4(),
+            "Consultation Fee": lambda: random.randint(300, 2000),
+            "Medicine Charges": lambda: random.randint(50, 5000),
+            "Lab Test Charges": lambda: random.randint(100, 8000),
+
+            # Auto-calc total using math
+            "Total Bill": lambda: (
+                lambda cf, mc, lt: cf + mc + lt
+            )(
+                random.randint(300, 2000),
+                random.randint(50, 5000),
+                random.randint(100, 8000)
+            ),
+
+            "Payment Method": lambda: random.choice(["Cash", "Credit Card", "UPI", "Insurance", "Wallet"]),
+            "Payment Status": lambda: random.choice(["Paid", "Pending", "Failed"])
+        },
+
+        # 7. DEVICE INFO (for telemedicine)
+        "Device Info": {
+            "Device Type": lambda: random.choice(["Mobile", "Desktop", "Tablet"]),
+            "Os": lambda: random.choice(["Android", "iOS", "Windows", "MacOS"]),
+            "Browser": lambda: random.choice(["Chrome", "Safari", "Firefox", "Edge"]),
+
+            # Light time usage for device response
+            "Avg Response Time Ms": lambda: random.randint(50, 300)
+        }
+    }
+}
 
 IOT_SENSOR_TEMPLATE = {
     "template_name": "iot_sensor_template",
@@ -785,3 +882,33 @@ PRODUCT_CATALOG_TEMPLATE = {
     }
 }
 
+
+# ----------GENERATOR FUNCTION----------
+
+def generate_from_template(template, selected_subcats, count=1, seed=None):
+    if seed is not None:
+        Faker.seed(seed)
+        random.seed(seed)
+
+    all_rows = []
+
+    for _ in range(count):
+        generated_data = {"id": str(uuid.uuid4())}  # internal only
+
+        for subcat in selected_subcats:
+            if subcat in template["subcategories"]:
+                for field, fn in template["subcategories"][subcat].items():
+                    generated_data[field] = fn()
+
+        all_rows.append(generated_data)
+
+    # Convert to DataFrame
+    df = pd.DataFrame(all_rows)
+    if "id" in df.columns:
+        df = df.drop(columns=["id"])
+
+
+    # Add sequential ID starting from 1
+    df.insert(0, "S.no.", range(1, len(df) + 1))
+
+    return df
