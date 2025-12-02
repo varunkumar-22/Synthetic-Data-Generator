@@ -102,4 +102,44 @@ def main():
     print(f"* Columns Generated: {len(df.columns)}")
     print(f"* Seed: {seed_input}")
     print("==============================")
+    # --------------------------
+    # CALL FIXED MENU HERE
+    # --------------------------
+    print("\nSelect what you want to do next:")
+    print("1. Preview data (first 5 rows)")
+    print("2. Save as CSV")
+    print("3. Save as JSON")
+    print("4. Exit\n")
+
+    user_input = input("Enter options (comma-separated): ")
+
+    choices = [c.strip() for c in user_input.split(",")]
+
+    if "1" in choices:
+        print("\n---- DATA PREVIEW (top 5 rows) ----")
+        print(f"{df.head()}\n")
+
+    if "2" in choices:
+        file_name_input= input("Enter CSV file name: ")
+        file_name= f"{file_name_input}.csv"
+        df.to_csv(file_name, index=False)
+        print(f"✔ CSV saved as {file_name}\n")
+
+    if "3" in choices:
+        file_name_input = input("Enter JSON file name: ")
+        file_name = f"{file_name_input}.json"
+        df.to_json(file_name, orient="records", indent=4)
+        print(f"✔ JSON saved as {file_name}\n")
+
+    if "4" in choices:
+        print("Exiting...\n")
+
+
+        print("\nThank you for using the Synthetic Data Generator!")
+
+if __name__ == "__main__":
+    main()
+
+
+
 
