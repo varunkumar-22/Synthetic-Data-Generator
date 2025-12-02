@@ -84,3 +84,12 @@ def main():
     # Step 4: Seed (optional)
     seed_input = input("\nEnter Seed (press Enter to skip): ").strip()
     seed = int(seed_input) if seed_input else None
+
+    # Step 5: Generate data using your generator engine
+    print("\nGenerating Synthetic Data...")
+    start=time.time()
+    data = generate_from_template(template, selected_subcats, count, seed)
+    end=time.time()
+    
+    df=pd.DataFrame(data)
+    
