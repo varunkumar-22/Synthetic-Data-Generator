@@ -33,3 +33,24 @@ TEMPLATES = {
 
 from DATA_ENGINE import generate_from_template
 
+def main():
+    print(""" 
+-----------------------------
+🔥 SYNTHETIC DATA GENERATOR 🔥
+-----------------------------""")
+
+    # Step 1: Template selection
+    print("\nAvailable Templates:\n")
+
+    for idx, tname in enumerate(TEMPLATES.keys(), start=1):
+        print(f"{idx}. {tname}\n")
+
+    template_choice = input("\nSelect a Template (number): ").strip()
+
+    # Validate choice
+    try:
+        template_index = int(template_choice) - 1
+        template_name = list(TEMPLATES.keys())[template_index]
+    except (ValueError, IndexError):
+        print("❌ Invalid template selection!")
+        return
