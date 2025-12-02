@@ -93,3 +93,13 @@ def main():
     
     df=pd.DataFrame(data)
     
+    print(f"\n✅ DATA  GENERATED SUCCESSFULLY!")
+    print("==============================")
+    print("           SUMMARY          \n")
+    print(f"* Template: {template_name}")
+    print(f"⏱ Time Taken: {end - start:.2f} seconds")
+    print(f"* Rows Generated: {count}")
+    print(f"* Columns Generated: {len(df.columns)}")
+    print(f"* Seed: {seed_input}")
+    print("==============================")
+
