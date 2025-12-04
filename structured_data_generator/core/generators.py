@@ -1,4 +1,5 @@
 from faker import Faker
+import pandas as pd
 import random
 import uuid
 import pandas as pd
