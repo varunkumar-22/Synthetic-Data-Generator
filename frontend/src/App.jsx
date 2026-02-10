@@ -47,19 +47,6 @@ export function App() {
     );
   };
 
-  const handleDownloadJson = () => {
-    if (!rows.length) return;
-    const blob = new Blob([JSON.stringify(rows, null, 2)], {
-      type: "application/json;charset=utf-8;"
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "synthetic-data.json";
-    link.click();
-    URL.revokeObjectURL(url);
-  };
-
   const handleGenerate = async (e) => {
     e.preventDefault();
     if (!selectedTemplateId || selectedSubcats.length === 0) {
@@ -115,6 +102,19 @@ export function App() {
     const link = document.createElement("a");
     link.href = url;
     link.download = "synthetic-data.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadJson = () => {
+    if (!rows.length) return;
+    const blob = new Blob([JSON.stringify(rows, null, 2)], {
+      type: "application/json;charset=utf-8;"
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "synthetic-data.json";
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -262,8 +262,8 @@ export function App() {
               </table>
               {rows.length > 10 && (
                 <p className="muted">
-                  Showing first 10 of {rows.length} rows. Download CSV for the
-                  full dataset.
+                  Showing first 10 of {rows.length} rows. Download CSV or JSON
+                  for the full dataset.
                 </p>
               )}
             </div>

@@ -9,12 +9,15 @@ const PORT = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 
+// Small helper to talk to the Python bridge using stdin/stdout.
 function callPythonApi(payload) {
   return new Promise((resolve, reject) => {
-    // Run Python from the repo root so the structured_data_generator
-    // package can be imported without needing a pip install.
     const repoRoot = path.join(__dirname, "..", "..");
-    const py = spawn("python", ["-m", "structured_data_generator.api"], {
+
+    // Prefer PYTHON env var if set, fall back to python3, then python
+    const pythonCmd = process.env.PYTHON || "python3";
+
+    const py = spawn(pythonCmd, ["-m", "structured_data_generator.api"], {
       cwd: repoRoot
     });
 
@@ -34,21 +37,19 @@ function callPythonApi(payload) {
     });
 
     py.on("close", () => {
-      if (stderr) {
-        // Python module prints errors to JSON on stdout; stderr here is unexpected
-        // but surface it just in case.
-        console.error("Python stderr:", stderr);
+      // If Python printed anything to stderr or nothing to stdout,
+      // treat it as an error so we can see the real message.
+      if (stderr.trim() || !stdout.trim()) {
+        const msg = `Python bridge failed. stdout="${stdout.trim()}", stderr="${stderr.trim()}"`;
+        return reject(new Error(msg));
       }
 
       try {
         const json = JSON.parse(stdout || "{}");
-        resolve(json);
+        return resolve(json);
       } catch (e) {
-        reject(
-          new Error(
-            `Failed to parse Python response. Raw output: ${stdout}\nError: ${e.message}`
-          )
-        );
+        const msg = `Could not parse Python output. stdout="${stdout}", stderr="${stderr}"`;
+        return reject(new Error(msg));
       }
     });
 
@@ -57,18 +58,17 @@ function callPythonApi(payload) {
   });
 }
 
+app.get("/api/health", (_req, res) => {
+  res.json({ status: "ok" });
+});
+
 app.get("/api/templates", async (_req, res) => {
   try {
     const result = await callPythonApi({ action: "list_templates" });
-    if (result.error) {
-      return res.status(500).json({ error: result.error });
-    }
-    return res.json(result);
+    res.json(result);
   } catch (err) {
-    console.error(err);
-    return res
-      .status(500)
-      .json({ error: `Failed to load templates: ${err.message}` });
+    console.error("Error loading templates:", err.message);
+    res.status(500).json({ error: err.message || "Failed to load templates" });
   }
 });
 
@@ -97,19 +97,13 @@ app.post("/api/generate", async (req, res) => {
       count: Number(count),
       seed: seed === undefined || seed === null || seed === "" ? null : seed
     };
-    const result = await callPythonApi(payload);
-    if (result.error) {
-      return res.status(500).json({ error: result.error });
-    }
-    return res.json(result);
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Failed to generate data" });
-  }
-});
 
-app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok" });
+    const result = await callPythonApi(payload);
+    res.json(result);
+  } catch (err) {
+    console.error("Error generating data:", err.message);
+    res.status(500).json({ error: err.message || "Failed to generate data" });
+  }
 });
 
 app.listen(PORT, () => {

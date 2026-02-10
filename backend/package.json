@@ -1,7 +1,7 @@
 {
   "name": "synthetic-data-backend",
   "version": "1.0.0",
-  "description": "Node.js backend API for Synthetic Data Generator (bridges to Python core)",
+  "description": "Minimal Node.js API for Synthetic Data Generator",
   "main": "src/index.js",
   "scripts": {
     "dev": "node src/index.js",
