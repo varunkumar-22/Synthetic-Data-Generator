@@ -16,3 +16,9 @@ dependencies = [
 
 [project.scripts]
 generate-dataset = "scripts.generate_dataset:main"
+
+[tool.setuptools]
+packages = [
+    "structured_data_generator",
+    "scripts",
+]
