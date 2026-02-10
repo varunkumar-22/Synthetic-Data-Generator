@@ -1,0 +1,2 @@
+scripts
+structured_data_generator
