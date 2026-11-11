@@ -1,0 +1,29 @@
+@reference "../../index.css";
+
+.template-card {
+  @apply flex flex-col p-0;
+}
+
+.template-card-head {
+  @apply flex items-center justify-between gap-3 border-b border-border px-4 py-3;
+}
+
+.template-card-title {
+  @apply text-xs font-semibold tracking-wide;
+}
+
+.template-card-count {
+  @apply shrink-0 text-xs text-text-muted;
+}
+
+.template-card-list {
+  @apply flex flex-col px-4 py-2;
+}
+
+.template-card-item {
+  @apply border-b border-border-muted py-1.5 text-text last:border-b-0;
+}
+
+.template-card-action {
+  @apply mx-4 mt-auto mb-4 self-start border-primary bg-primary text-white hover:bg-primary-hover;
+}

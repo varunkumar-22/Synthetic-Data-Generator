@@ -1,0 +1,27 @@
+@reference "../../index.css";
+
+.sidebar {
+  @apply sticky top-0 flex h-screen w-52 shrink-0 flex-col border-r border-border bg-panel;
+}
+
+.sidebar-brand {
+  @apply flex h-12 items-center border-b border-border gap-2 px-4 text-sm font-semibold;
+}
+
+.sidebar-brand::before {
+  content: "";
+  @apply size-8 -ml-1 shrink-0 bg-contain bg-center bg-no-repeat;
+  background-image: url("/logo.png");
+}
+
+.sidebar-nav {
+  @apply flex flex-col gap-px p-2;
+}
+
+.sidebar-link {
+  @apply flex h-8 items-center rounded-md px-2 text-sm text-text-muted hover:bg-bg hover:text-text;
+}
+
+.sidebar-link-active {
+  @apply bg-bg font-medium text-text;
+}
