@@ -1,273 +1,146 @@
-# Structured Data Generator - Project Structure
+# Project Structure
 
-## 📁 Project Organization
+The project has three parts that sit side by side: a Python package that does the actual data generation, a Node + Express server that exposes it over HTTP, and a React app that talks to the server.
 
 ```
-structured_data_generator/
+Synthetic-Data-Generator/
 │
-├── README.md                          # Project overview, installation, usage
-├── setup.py                           # For packaging and dependencies
-├── pyproject.toml                     # Modern Python packaging
-├── requirements.txt                   # Required Python packages
-├── LICENSE                            # MIT License
+├── structured_data_generator/     # Python package: the engine and its CLI
+│   ├── templates/                 # One file per template
+│   │   ├── __init__.py            # TEMPLATES registry
+│   │   ├── base.py                # Shared Faker instance
+│   │   ├── user.py
+│   │   ├── ecommerce.py
+│   │   └── ...
+│   ├── engine/                    # Generation logic
+│   │   ├── generator.py           # generate_from_template
+│   │   ├── constraints.py         # Ranges, uniqueness, correlations
+│   │   └── utils.py               # Seeding, template validation
+│   ├── io/                        # CSV and JSON read/write
+│   ├── profiling/                 # Dataset profiles and summary stats
+│   ├── cli/                       # The sdg command
+│   │   ├── __init__.py            # Subcommand wiring
+│   │   ├── generate.py            # sdg generate
+│   │   └── profile.py             # sdg profile <file>
+│   ├── bridge.py                  # JSON over stdin/stdout, called by the server
+│   └── config.py                  # Default settings
 │
-├── data/                              # Sample input/output datasets
-│   ├── raw/                           # Raw input data
-│   └── generated/                     # Generated output data
+├── server/                        # Node + Express API
+│   └── src/
+│       ├── index.js               # Starts the server
+│       ├── app.js                 # Builds the app and mounts routes
+│       ├── config.js              # PORT, PYTHON, repo root
+│       ├── routes/                # One file per resource
+│       │   ├── health.js
+│       │   ├── templates.js
+│       │   └── generate.js
+│       ├── services/
+│       │   └── pythonBridge.js    # Spawns bridge.py and parses its reply
+│       └── middleware/
+│           ├── validate.js        # Request validation
+│           └── errorHandler.js    # Turns thrown errors into JSON responses
 │
-├── structured_data_generator/         # Main source code package
-│   ├── __init__.py
-│   │
-│   ├── core/                          # Core data generation logic
-│   │   ├── __init__.py
-│   │   ├── generators.py              # All templates and generation engine
-│   │   ├── constraints.py             # Enforce ranges, uniqueness, correlations
-│   │   └── utils.py                   # Helper functions, seed management
-│   │
-│   ├── io/                            # Input/output handling
-│   │   ├── __init__.py
-│   │   ├── csv_handler.py             # CSV read/write
-│   │   └── json_handler.py            # JSON read/write
-│   │
-│   ├── profiling/                     # Data profiling and summary statistics
-│   │   ├── __init__.py
-│   │   └── profiler.py                # Generate dataset profiles
-│   │
-│   └── config/                        # Configuration management
-│       ├── __init__.py
-│       └── default_config.py          # Default parameters, distributions, seed
+├── web/                           # React + Vite app
+│   └── src/
+│       ├── App.jsx                # Routes
+│       ├── features/              # One folder per feature
+│       │   ├── home/
+│       │   ├── templates/         # Page, TemplateCard, useTemplates, api
+│       │   ├── generate/          # Page, ConfigForm, PreviewTable, api
+│       │   └── docs/
+│       ├── components/            # UI shared across features
+│       │   ├── Alert/
+│       │   ├── PageHeader/
+│       │   └── Sidebar/
+│       └── lib/                   # Helpers shared across features
+│           └── download.js
 │
-├── tests/                             # Unit tests
-│   ├── __init__.py
-│   ├── test_generators.py             # Test data generation
-│   ├── test_constraints.py            # Test constraint enforcement
-│   ├── test_io.py                     # Test I/O operations
-│   └── test_profiler.py               # Test profiling functionality
-│
-├── scripts/                           # CLI or automation scripts
-│   ├── __init__.py
-│   ├── generate_dataset.py            # Main CLI for generating datasets
-│   └── profile_dataset.py             # CLI for profiling datasets
-│
-└── examples/                          # Example notebooks
-    ├── numeric_example.ipynb          # Numeric data generation examples
-    ├── categorical_example.ipynb      # Categorical data examples
-    └── timeseries_example.ipynb       # Time series data examples
+├── tests/                         # Python unit tests
+├── examples/                      # Example notebooks
+├── pyproject.toml
+└── requirements.txt
 ```
 
-## 🚀 Installation
+## How a request flows
 
-### Option 1: Development Mode (Recommended for development)
+```
+web (React)  →  server (Express)  →  bridge.py  →  engine + templates
+```
+
+The web app only ever calls `/api/...`. The server validates the request and passes it to `bridge.py` as JSON. The bridge calls the same Python functions the CLI uses, so the CLI and the web app always produce the same data.
+
+## Setup
 
 ```bash
-# Clone or navigate to the project directory
-cd structured_data_generator
-
-# Install in editable mode
+# Python package and the sdg command
 pip install -e .
+
+# Server
+cd server && npm install
+
+# Web app
+cd web && npm install
 ```
 
-### Option 2: Regular Installation
+## Running
 
 ```bash
-pip install .
+# CLI
+sdg generate
+sdg profile my_data.csv
+
+# Server, on http://localhost:4000
+cd server && npm run dev
+
+# Web app, proxies /api to the server
+cd web && npm run dev
 ```
 
-### Option 3: Install from requirements.txt
+If the server should use a virtualenv, point it at that interpreter:
 
 ```bash
-pip install -r requirements.txt
+PYTHON=../venv/bin/python npm run dev
 ```
 
-## 📖 Usage
-
-### Using the CLI
+## Running tests
 
 ```bash
-# Run the interactive CLI
-python scripts/generate_dataset.py
-
-# Profile an existing dataset
-python scripts/profile_dataset.py data/generated/my_data.csv
-```
-
-### Using as a Python Module
-
-```python
-from structured_data_generator.core.generators import (
-    USER_TEMPLATE, 
-    ECOM_TEMPLATE,
-    generate_from_template
-)
-
-# Generate user data
-data = generate_from_template(
-    USER_TEMPLATE,
-    ["Personal Info", "Address"],
-    count=100,
-    seed=42
-)
-
-# Save to CSV
-from structured_data_generator.io.csv_handler import save_to_csv
-save_to_csv(data, "users.csv")
-```
-
-### Using I/O Handlers
-
-```python
-from structured_data_generator.io.csv_handler import save_to_csv, load_from_csv
-from structured_data_generator.io.json_handler import save_to_json, load_from_json
-
-# Save data
-save_to_csv(dataframe, "output.csv")
-save_to_json(dataframe, "output.json")
-
-# Load data
-df_csv = load_from_csv("output.csv")
-df_json = load_from_json("output.json")
-```
-
-### Using Profiler
-
-```python
-from structured_data_generator.profiling.profiler import generate_profile, print_profile
-
-# Generate and print profile
-profile = generate_profile(dataframe)
-print_profile(profile)
-```
-
-## 🧪 Running Tests
-
-```bash
-# Run all tests
 python -m unittest discover tests
-
-# Run specific test file
-python -m unittest tests.test_generators
-
-# Run with verbose output
-python -m unittest discover tests -v
 ```
 
-## 📊 Available Templates
+## Adding a new feature
 
-1. **USER_TEMPLATE** - User profiles and account information
-2. **ECOM_TEMPLATE** - E-commerce transactions
-3. **FINANCIAL_TEMPLATE** - Banking and financial data
-4. **HEALTHCARE_TEMPLATE** - Medical records and patient data
-5. **IOT_SENSOR_TEMPLATE** - IoT sensor readings
-6. **NLP_TEXT_TEMPLATE** - Text and NLP data
-7. **WEB_ANALYTICS_TEMPLATE** - Website analytics data
-8. **IMAGE_METADATA_TEMPLATE** - Image metadata
-9. **EDU_STUDENT_TEMPLATE** - Student academic records
-10. **PRODUCT_CATALOG_TEMPLATE** - Product catalog data
+Work from the inside out: Python first, then the server, then the web app. Each layer has one obvious place for new code.
 
-## 🔧 Configuration
+### A feature that goes all the way to the web app
 
-Edit `structured_data_generator/config/default_config.py` to customize:
+Say you want to profile a dataset from the browser.
 
-- Default locale
-- Default number of rows
-- CSV/JSON export settings
-- Random seed behavior
+1. **Python logic.** Put the function in the package folder it belongs to, here `structured_data_generator/profiling/`. Add a test in `tests/`.
+2. **Bridge action.** Add a new `action` branch in `structured_data_generator/bridge.py` that reads the payload, calls your function and returns JSON.
+3. **Server route.** Create `server/src/routes/profile.js`, call `callPython({ action: "profile", ... })` inside it, and mount it with one line in `server/src/app.js`. If the request needs checking, add a validator to `server/src/middleware/validate.js`.
+4. **Web feature.** Create `web/src/features/profile/` with the page, its components and an `api.js` that calls the new endpoint. Add the route in `web/src/App.jsx` and a link in `web/src/components/Sidebar/Sidebar.jsx`.
 
-## 📝 Code Migration Notes
+If the feature should also work in the terminal, add `structured_data_generator/cli/<name>.py` and register the subcommand in `structured_data_generator/cli/__init__.py`.
 
-### What Changed?
+### Smaller additions
 
-1. **Original Structure:**
-   - `CLI.py` - Main CLI script
-   - `DATA_ENGINE.py` - All templates and generation logic
+**A new template.** Create `structured_data_generator/templates/<name>.py`, following an existing one such as `user.py`. Register it in the `TEMPLATES` dict in `templates/__init__.py`. The CLI and the web app pick it up from there, so nothing else changes.
 
-2. **New Structure:**
-   - Code split into logical modules
-   - Proper package structure with `__init__.py` files
-   - Separate modules for I/O, profiling, configuration
-   - Unit tests added
-   - Example notebooks added
-   - Proper packaging with `setup.py` and `pyproject.toml`
+**A new output format.** Add `structured_data_generator/io/<format>_handler.py` with a save and a load function, next to the CSV and JSON ones.
 
-### Import Changes
+**A new API endpoint for an existing feature.** Add it to that feature's file in `server/src/routes/`.
 
-**Old way:**
-```python
-from DATA_ENGINE import USER_TEMPLATE, generate_from_template
-```
+**A new UI component.** If only one feature uses it, keep it in that feature's folder. Move it to `web/src/components/` once a second feature needs it.
 
-**New way:**
-```python
-from structured_data_generator.core.generators import USER_TEMPLATE, generate_from_template
-```
+### Rules of thumb
 
-### Running the CLI
+Generation logic lives in Python only. The server should not reimplement it, only pass requests through.
 
-**Old way:**
-```bash
-python CLI.py
-```
+Features in `web/src/features/` should not import from each other. Shared code goes in `components/` or `lib/`.
 
-**New way:**
-```bash
-python scripts/generate_dataset.py
-```
+Routes stay thin: validate, call the bridge, return the result.
 
-## 🎯 Benefits of New Structure
+## License
 
-1. **Modularity** - Code organized into logical modules
-2. **Reusability** - Easy to import and use in other projects
-3. **Testability** - Unit tests for all components
-4. **Maintainability** - Clear separation of concerns
-5. **Scalability** - Easy to add new features
-6. **Professional** - Follows Python packaging best practices
-7. **Documentation** - Better organized with examples
-
-## 🤝 Contributing
-
-To add new templates:
-
-1. Edit `structured_data_generator/core/generators.py`
-2. Add your template following the existing pattern
-3. Export it in `structured_data_generator/core/__init__.py`
-4. Add tests in `tests/test_generators.py`
-5. Update documentation
-
-## 📚 Additional Resources
-
-- See `examples/` for Jupyter notebook examples
-- See `tests/` for usage examples in tests
-- See original `README.md` for detailed template documentation
-
-## ⚠️ Backward Compatibility
-
-The original `CLI.py` and `DATA_ENGINE.py` files are still present for backward compatibility. However, it's recommended to use the new structured approach for all new development.
-
-## 🐛 Troubleshooting
-
-### ModuleNotFoundError
-
-If you get `ModuleNotFoundError: No module named 'structured_data_generator'`:
-
-```bash
-# Install the package in development mode
-pip install -e .
-```
-
-### Import Errors
-
-Make sure you're using the correct import paths:
-
-```python
-from structured_data_generator.core.generators import ...
-```
-
-Not:
-
-```python
-from DATA_ENGINE import ...  # Old way
-```
-
-## 📄 License
-
-MIT License - See LICENSE file for details
+MIT License. See the LICENSE file for details.

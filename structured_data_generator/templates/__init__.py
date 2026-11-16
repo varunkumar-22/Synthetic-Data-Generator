@@ -1,0 +1,26 @@
+"""Pre-defined templates shared by the CLI and the web app."""
+
+from .user import USER_TEMPLATE
+from .ecommerce import ECOM_TEMPLATE
+from .financial import FINANCIAL_TEMPLATE
+from .healthcare import HEALTHCARE_TEMPLATE
+from .iot_sensor import IOT_SENSOR_TEMPLATE
+from .nlp_text import NLP_TEXT_TEMPLATE
+from .web_analytics import WEB_ANALYTICS_TEMPLATE
+from .image_metadata import IMAGE_METADATA_TEMPLATE
+from .edu_student import EDU_STUDENT_TEMPLATE
+from .product_catalog import PRODUCT_CATALOG_TEMPLATE
+
+# Register new templates here. The CLI and the web app both read this dict.
+TEMPLATES = {
+    "USER TEMPLATE": USER_TEMPLATE,
+    "ECOMMERCE TRANSACTION TEMPLATE": ECOM_TEMPLATE,
+    "FINANCIAL BANKING TEMPLATE": FINANCIAL_TEMPLATE,
+    "HEALTHCARE TEMPLATE": HEALTHCARE_TEMPLATE,
+    "IOT SENSOR TEMPLATE": IOT_SENSOR_TEMPLATE,
+    "NLP TEXT TEMPLATE": NLP_TEXT_TEMPLATE,
+    "WEB ANALYTICS TEMPLATE": WEB_ANALYTICS_TEMPLATE,
+    "IMAGE METADATA TEMPLATE": IMAGE_METADATA_TEMPLATE,
+    "EDU STUDENT TEMPLATE": EDU_STUDENT_TEMPLATE,
+    "PRODUCT CATALOG TEMPLATE": PRODUCT_CATALOG_TEMPLATE,
+}

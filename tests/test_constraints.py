@@ -3,8 +3,8 @@ Unit tests for constraints module
 """
 
 import unittest
-from structured_data_generator.core.constraints import (
-    enforce_range, ensure_uniqueness, apply_correlation
+from structured_data_generator.engine.constraints import (
+    enforce_range, ensure_uniqueness
 )
 
 

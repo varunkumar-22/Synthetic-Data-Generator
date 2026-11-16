@@ -2,7 +2,6 @@
 Generate dataset profiles and summary statistics
 """
 
-import pandas as pd
 
 
 def generate_profile(dataframe):
@@ -25,7 +24,7 @@ def generate_profile(dataframe):
 
 def print_profile(profile):
     """Print dataset profile in readable format"""
-    print(f"\nDataset Profile:")
+    print("\nDataset Profile:")
     print(f"Shape: {profile['shape'][0]} rows × {profile['shape'][1]} columns")
     print(f"Memory Usage: {profile['memory_usage'] / 1024:.2f} KB")
     print(f"\nColumns: {', '.join(profile['columns'])}")
