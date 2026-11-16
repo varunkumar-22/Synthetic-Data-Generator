@@ -1,3 +1,0 @@
-"""
-CLI and automation scripts
-"""

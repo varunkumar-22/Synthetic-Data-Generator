@@ -3,7 +3,6 @@ JSON read/write operations
 """
 
 import pandas as pd
-import json
 
 
 def save_to_json(dataframe, filename, orient='records', indent=4):
