@@ -57,12 +57,11 @@ def generate_data(
   return df.to_dict(orient="records")
 
 
-def _handle_stdin() -> None:
+def handle(payload: Dict[str, Any]) -> Dict[str, Any]:
   """
-  Simple JSON-over-stdin/stdout protocol so other runtimes
-  (the Node.js server in server/) can call this module safely.
+  Run one request from the Node.js server in server/.
 
-  Expected input JSON:
+  Expected payload:
       {"action": "list_templates"}
   or:
       {
@@ -72,18 +71,16 @@ def _handle_stdin() -> None:
         "count": 100,
         "seed": 42   # optional
       }
+
+  Errors come back as {"error": "..."} so callers can surface them nicely.
   """
   try:
-    payload_raw = sys.stdin.read()
-    if not payload_raw.strip():
-      raise ValueError("Empty request payload")
-
-    payload = json.loads(payload_raw)
     action = payload.get("action")
 
     if action == "list_templates":
-      result = {"templates": get_templates_metadata()}
-    elif action == "generate":
+      return {"templates": get_templates_metadata()}
+
+    if action == "generate":
       template_id = payload["templateId"]
       subcats = payload.get("subcategories") or []
       count = int(payload.get("count", 1))
@@ -91,18 +88,45 @@ def _handle_stdin() -> None:
       if seed is not None:
         seed = int(seed)
 
-      rows = generate_data(template_id, subcats, count, seed)
-      result = {"rows": rows}
-    else:
-      raise ValueError(f"Unknown action: {action}")
+      return {"rows": generate_data(template_id, subcats, count, seed)}
 
-    json.dump(result, sys.stdout)
+    raise ValueError(f"Unknown action: {action}")
   except Exception as exc:  # noqa: BLE001
-    # Keep the error payload JSON so callers can surface it nicely
-    error_payload = {"error": str(exc)}
-    json.dump(error_payload, sys.stdout)
+    return {"error": str(exc)}
+
+
+def app(environ, start_response):
+  """
+  WSGI entry point, used when the server reaches Python over HTTP
+  (on Vercel the Python code runs as its own service).
+  """
+  try:
+    size = int(environ.get("CONTENT_LENGTH") or 0)
+    payload = json.loads(environ["wsgi.input"].read(size) or b"{}")
+    result = handle(payload)
+  except ValueError as exc:
+    result = {"error": f"Invalid JSON payload: {exc}"}
+
+  body = json.dumps(result, default=str).encode("utf-8")
+  start_response("200 OK", [
+    ("Content-Type", "application/json"),
+    ("Content-Length", str(len(body))),
+  ])
+  return [body]
+
+
+def _handle_stdin() -> None:
+  """Used when the server runs Python locally as a child process."""
+  try:
+    payload_raw = sys.stdin.read()
+    if not payload_raw.strip():
+      raise ValueError("Empty request payload")
+    result = handle(json.loads(payload_raw))
+  except ValueError as exc:
+    result = {"error": str(exc)}
+
+  json.dump(result, sys.stdout)
 
 
 if __name__ == "__main__":
   _handle_stdin()
-

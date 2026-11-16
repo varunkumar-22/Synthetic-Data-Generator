@@ -1,8 +1,24 @@
 const { spawn } = require("child_process");
-const { PYTHON, REPO_ROOT } = require("../config");
+const { PYTHON, REPO_ROOT, PYTHON_SERVICE_URL } = require("../config");
 
-// Talks to forma/bridge.py over stdin/stdout.
-function callPython(payload) {
+// On Vercel, Python runs as its own service and we call it over HTTP.
+async function callPythonService(payload) {
+  const res = await fetch(PYTHON_SERVICE_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  const text = await res.text();
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    throw new Error(`Python service returned ${res.status}: ${text.slice(0, 200)}`);
+  }
+}
+
+// Locally, run forma/bridge.py as a child process over stdin/stdout.
+function callPythonProcess(payload) {
   return new Promise((resolve, reject) => {
     const py = spawn(PYTHON, ["-m", "forma.bridge"], {
       cwd: REPO_ROOT,
@@ -42,6 +58,18 @@ function callPython(payload) {
     py.stdin.write(JSON.stringify(payload));
     py.stdin.end();
   });
+}
+
+async function callPython(payload) {
+  const result = PYTHON_SERVICE_URL
+    ? await callPythonService(payload)
+    : await callPythonProcess(payload);
+
+  // The bridge reports its own errors as {"error": "..."}
+  if (result && result.error) {
+    throw new Error(result.error);
+  }
+  return result;
 }
 
 module.exports = { callPython };
