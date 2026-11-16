@@ -1,0 +1,21 @@
+@reference "../../index.css";
+
+.home {
+  @apply mx-auto mt-24 flex max-w-xl flex-col items-center text-center;
+}
+
+.home-logo {
+  @apply mb-4 size-16 mix-blend-multiply;
+}
+
+.home-title {
+  @apply text-2xl font-semibold;
+}
+
+.home-text {
+  @apply mt-3 leading-relaxed text-text-muted;
+}
+
+.home-cta {
+  @apply mt-6 inline-flex items-center;
+}

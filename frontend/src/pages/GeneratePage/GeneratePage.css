@@ -1,0 +1,13 @@
+@reference "../../index.css";
+
+.generate-layout {
+  @apply grid items-start gap-4 lg:grid-cols-[360px_minmax(0,1fr)];
+}
+
+.generate-layout > .card:last-child {
+  @apply min-h-[420px];
+}
+
+.generate-layout > .card:last-child > .muted {
+  @apply py-40 rounded-md border border-dashed border-border text-center;
+}

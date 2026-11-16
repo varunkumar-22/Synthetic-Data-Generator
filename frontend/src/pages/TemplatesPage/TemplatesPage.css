@@ -1,0 +1,5 @@
+@reference "../../index.css";
+
+.templates-grid {
+  @apply grid gap-4 md:grid-cols-2 xl:grid-cols-3;
+}

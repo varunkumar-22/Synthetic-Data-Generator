@@ -1,0 +1,13 @@
+@reference "../../index.css";
+
+.page-header {
+  @apply mb-5;
+}
+
+.page-title {
+  @apply text-xl font-semibold;
+}
+
+.page-subtitle {
+  @apply mt-0.5 text-text-muted;
+}
