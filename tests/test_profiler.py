@@ -4,7 +4,7 @@ Unit tests for profiler module
 
 import unittest
 import pandas as pd
-from structured_data_generator.profiling.profiler import generate_profile
+from forma.profiling.profiler import generate_profile
 
 
 class TestProfiler(unittest.TestCase):

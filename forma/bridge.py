@@ -2,8 +2,8 @@ import json
 import sys
 from typing import Any, Dict, List, Optional
 
-from structured_data_generator.templates import TEMPLATES
-from structured_data_generator.engine import generate_from_template
+from forma.templates import TEMPLATES
+from forma.engine import generate_from_template
 
 
 def _get_subcategories_mapping(template: Dict[str, Any]) -> Dict[str, Any]:

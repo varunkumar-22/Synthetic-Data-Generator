@@ -5,7 +5,7 @@ export default function HomePage() {
   return (
     <section className="home">
       <img src="/logo.png" alt="" className="home-logo" />
-      <h1 className="home-title">Synthetic Data Generator</h1>
+      <h1 className="home-title">Forma</h1>
       <p className="home-text">Generate fake datasets for testing, demos and prototyping.</p>
       <p className="home-text">
         Pick a pre-defined template, choose the subcategories you need, and export the result as

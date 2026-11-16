@@ -1,10 +1,10 @@
 const { spawn } = require("child_process");
 const { PYTHON, REPO_ROOT } = require("../config");
 
-// Talks to structured_data_generator/bridge.py over stdin/stdout.
+// Talks to forma/bridge.py over stdin/stdout.
 function callPython(payload) {
   return new Promise((resolve, reject) => {
-    const py = spawn(PYTHON, ["-m", "structured_data_generator.bridge"], {
+    const py = spawn(PYTHON, ["-m", "forma.bridge"], {
       cwd: REPO_ROOT,
     });
 

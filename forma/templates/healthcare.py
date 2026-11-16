@@ -2,7 +2,7 @@ import random
 import math
 import datetime
 
-from structured_data_generator.templates.base import fake
+from forma.templates.base import fake
 
 HEALTHCARE_TEMPLATE = {
     "Template Name": "healthcare_medical_template",

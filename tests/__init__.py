@@ -1,3 +1,3 @@
 """
-Unit tests for structured data generator
+Unit tests for Forma
 """

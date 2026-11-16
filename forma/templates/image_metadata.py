@@ -4,7 +4,7 @@ import math
 import statistics
 import datetime
 
-from structured_data_generator.templates.base import fake
+from forma.templates.base import fake
 
 IMAGE_METADATA_TEMPLATE = {
     "Template Name": "image_metadata_template",

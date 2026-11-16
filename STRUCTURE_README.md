@@ -3,9 +3,9 @@
 The project has three parts that sit side by side: a Python package that does the actual data generation, a Node + Express server that exposes it over HTTP, and a React app that talks to the server.
 
 ```
-Synthetic-Data-Generator/
+Forma/
 │
-├── structured_data_generator/     # Python package: the engine and its CLI
+├── forma/     # Python package: the engine and its CLI
 │   ├── templates/                 # One file per template
 │   │   ├── __init__.py            # TEMPLATES registry
 │   │   ├── base.py                # Shared Faker instance
@@ -18,10 +18,10 @@ Synthetic-Data-Generator/
 │   │   └── utils.py               # Seeding, template validation
 │   ├── io/                        # CSV and JSON read/write
 │   ├── profiling/                 # Dataset profiles and summary stats
-│   ├── cli/                       # The sdg command
+│   ├── cli/                       # The forma command
 │   │   ├── __init__.py            # Subcommand wiring
-│   │   ├── generate.py            # sdg generate
-│   │   └── profile.py             # sdg profile <file>
+│   │   ├── generate.py            # forma generate
+│   │   └── profile.py             # forma profile <file>
 │   ├── bridge.py                  # JSON over stdin/stdout, called by the server
 │   └── config.py                  # Default settings
 │
@@ -72,7 +72,7 @@ The web app only ever calls `/api/...`. The server validates the request and pas
 ## Setup
 
 ```bash
-# Python package and the sdg command
+# Python package and the forma command
 pip install -e .
 
 # Server
@@ -86,8 +86,8 @@ cd web && npm install
 
 ```bash
 # CLI
-sdg generate
-sdg profile my_data.csv
+forma generate
+forma profile my_data.csv
 
 # Server, on http://localhost:4000
 cd server && npm run dev
@@ -116,18 +116,18 @@ Work from the inside out: Python first, then the server, then the web app. Each 
 
 Say you want to profile a dataset from the browser.
 
-1. **Python logic.** Put the function in the package folder it belongs to, here `structured_data_generator/profiling/`. Add a test in `tests/`.
-2. **Bridge action.** Add a new `action` branch in `structured_data_generator/bridge.py` that reads the payload, calls your function and returns JSON.
+1. **Python logic.** Put the function in the package folder it belongs to, here `forma/profiling/`. Add a test in `tests/`.
+2. **Bridge action.** Add a new `action` branch in `forma/bridge.py` that reads the payload, calls your function and returns JSON.
 3. **Server route.** Create `server/src/routes/profile.js`, call `callPython({ action: "profile", ... })` inside it, and mount it with one line in `server/src/app.js`. If the request needs checking, add a validator to `server/src/middleware/validate.js`.
 4. **Web feature.** Create `web/src/features/profile/` with the page, its components and an `api.js` that calls the new endpoint. Add the route in `web/src/App.jsx` and a link in `web/src/components/Sidebar/Sidebar.jsx`.
 
-If the feature should also work in the terminal, add `structured_data_generator/cli/<name>.py` and register the subcommand in `structured_data_generator/cli/__init__.py`.
+If the feature should also work in the terminal, add `forma/cli/<name>.py` and register the subcommand in `forma/cli/__init__.py`.
 
 ### Smaller additions
 
-**A new template.** Create `structured_data_generator/templates/<name>.py`, following an existing one such as `user.py`. Register it in the `TEMPLATES` dict in `templates/__init__.py`. The CLI and the web app pick it up from there, so nothing else changes.
+**A new template.** Create `forma/templates/<name>.py`, following an existing one such as `user.py`. Register it in the `TEMPLATES` dict in `templates/__init__.py`. The CLI and the web app pick it up from there, so nothing else changes.
 
-**A new output format.** Add `structured_data_generator/io/<format>_handler.py` with a save and a load function, next to the CSV and JSON ones.
+**A new output format.** Add `forma/io/<format>_handler.py` with a save and a load function, next to the CSV and JSON ones.
 
 **A new API endpoint for an existing feature.** Add it to that feature's file in `server/src/routes/`.
 

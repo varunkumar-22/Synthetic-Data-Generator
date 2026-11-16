@@ -4,7 +4,7 @@ import math
 import statistics
 import datetime
 
-from structured_data_generator.templates.base import fake
+from forma.templates.base import fake
 
 EDU_STUDENT_TEMPLATE = {
     "Template Name": "EducationStudentPerformanceTemplate",

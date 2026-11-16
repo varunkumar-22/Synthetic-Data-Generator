@@ -3,7 +3,7 @@ import math
 import statistics
 import time
 
-from structured_data_generator.templates.base import fake
+from forma.templates.base import fake
 
 IOT_SENSOR_TEMPLATE = {
     "template_name": "iot_sensor_template",

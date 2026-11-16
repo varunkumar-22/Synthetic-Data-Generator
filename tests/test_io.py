@@ -5,8 +5,8 @@ Unit tests for I/O handlers
 import unittest
 import pandas as pd
 import os
-from structured_data_generator.io.csv_handler import save_to_csv, load_from_csv
-from structured_data_generator.io.json_handler import save_to_json, load_from_json
+from forma.io.csv_handler import save_to_csv, load_from_csv
+from forma.io.json_handler import save_to_json, load_from_json
 
 
 class TestIO(unittest.TestCase):

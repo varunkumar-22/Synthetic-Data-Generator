@@ -4,7 +4,7 @@ import math
 import statistics
 import datetime
 
-from structured_data_generator.templates.base import fake
+from forma.templates.base import fake
 
 PRODUCT_CATALOG_TEMPLATE = {
     "Template Name": "product_catalog_template",
