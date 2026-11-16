@@ -4,7 +4,7 @@ CLI for generating dataset profiles
 
 import sys
 import pandas as pd
-from structured_data_generator.profiling.profiler import generate_profile, print_profile
+from forma.profiling.profiler import generate_profile, print_profile
 
 
 def main(filename):

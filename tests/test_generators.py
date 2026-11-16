@@ -3,8 +3,8 @@ Unit tests for data generators
 """
 
 import unittest
-from structured_data_generator.templates import USER_TEMPLATE, ECOM_TEMPLATE
-from structured_data_generator.engine import generate_from_template
+from forma.templates import USER_TEMPLATE, ECOM_TEMPLATE
+from forma.engine import generate_from_template
 
 
 class TestGenerators(unittest.TestCase):

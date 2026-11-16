@@ -2,7 +2,7 @@ import random
 import math
 import statistics
 
-from structured_data_generator.templates.base import fake
+from forma.templates.base import fake
 
 ECOM_TEMPLATE = {
     "template_name": "E-Commerce Transaction Template",

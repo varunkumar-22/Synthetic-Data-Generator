@@ -2,15 +2,15 @@ import pandas as pd
 import time
 
 
-from structured_data_generator.templates import TEMPLATES
-from structured_data_generator.engine import generate_from_template
+from forma.templates import TEMPLATES
+from forma.engine import generate_from_template
 
 
 def main():
     print(""" 
------------------------------
-  SYNTHETIC DATA GENERATOR 
------------------------------""")
+---------
+  FORMA
+---------""")
 
     # Step 1: Template selection
     print("\nAvailable Templates:\n")
@@ -107,7 +107,7 @@ def main():
         print("Exiting...\n")
 
 
-        print("\nThank you for using Synthetic Data Generator!")
+        print("\nThank you for using Forma!")
 
 if __name__ == "__main__":
     main()

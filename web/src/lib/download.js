@@ -13,7 +13,7 @@ function escapeCsv(value) {
   return /[",\n]/.test(str) ? `"${str}"` : str;
 }
 
-export function downloadCsv(rows, filename = "synthetic-data.csv") {
+export function downloadCsv(rows, filename = "forma-data.csv") {
   if (!rows.length) return;
   const headers = Object.keys(rows[0]);
   const lines = [
@@ -23,7 +23,7 @@ export function downloadCsv(rows, filename = "synthetic-data.csv") {
   downloadBlob(lines.join("\n"), "text/csv;charset=utf-8;", filename);
 }
 
-export function downloadJson(rows, filename = "synthetic-data.json") {
+export function downloadJson(rows, filename = "forma-data.json") {
   if (!rows.length) return;
   downloadBlob(JSON.stringify(rows, null, 2), "application/json;charset=utf-8;", filename);
 }

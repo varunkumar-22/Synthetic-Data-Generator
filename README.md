@@ -1,5 +1,5 @@
 
-# 📊 Synthetic Data Generator - Complete Documentation
+# 📊 Forma - Complete Documentation
 
 > **A simple, powerful CLI tool to generate realistic fake data for testing, development, and demonstrations.**
 
@@ -21,7 +21,7 @@
 
 ## What is This?
 
-The **Synthetic Data Generator** is a command-line tool that creates **realistic fake data** for different scenarios:
+**Forma** is a command-line tool that creates **realistic fake data** for different scenarios:
 
 ### 🎯 What Can You Do?
 
@@ -304,7 +304,7 @@ python CLI.py
 You'll see:
 ```
 -----------------------------
-🔥 SYNTHETIC DATA GENERATOR 🔥
+🔥 FORMA 🔥
 -----------------------------
 
 Available Templates:

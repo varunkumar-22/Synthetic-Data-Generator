@@ -3,7 +3,7 @@ import math
 import statistics
 import time
 
-from structured_data_generator.templates.base import fake
+from forma.templates.base import fake
 
 NLP_TEXT_TEMPLATE = {
     "template_name": "nlp_text_template",

@@ -3,7 +3,7 @@ Unit tests for constraints module
 """
 
 import unittest
-from structured_data_generator.engine.constraints import (
+from forma.engine.constraints import (
     enforce_range, ensure_uniqueness
 )
 

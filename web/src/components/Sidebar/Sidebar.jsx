@@ -11,7 +11,7 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <Link to="/" className="sidebar-brand">
-        Synthetic Data
+        Forma
       </Link>
       <nav className="sidebar-nav">
         {NAV_ITEMS.map((item) => (

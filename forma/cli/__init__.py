@@ -1,14 +1,14 @@
 """
-Command line interface: sdg generate, sdg profile <file>
+Command line interface: forma generate, forma profile <file>
 """
 
 import argparse
 
-from structured_data_generator.cli import generate, profile
+from forma.cli import generate, profile
 
 
 def main():
-    parser = argparse.ArgumentParser(prog="sdg", description="Synthetic data generator")
+    parser = argparse.ArgumentParser(prog="forma", description="Generate and profile synthetic datasets")
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("generate", help="Generate a dataset interactively")
     profile_parser = commands.add_parser("profile", help="Profile a CSV or JSON dataset")
